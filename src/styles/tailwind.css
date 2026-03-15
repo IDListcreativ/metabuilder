@@ -1,0 +1,567 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 36 20% 10%;
+    --foreground: 38 30% 90%;
+    --card: 36 18% 13%;
+    --card-foreground: 38 30% 90%;
+    --border: 36 15% 22%;
+    --input: 36 15% 22%;
+    --primary: 40 60% 48%;
+    --primary-foreground: 36 20% 8%;
+    --secondary: 36 14% 18%;
+    --secondary-foreground: 38 20% 72%;
+    --muted: 36 14% 20%;
+    --muted-foreground: 36 12% 52%;
+    --accent: 345 55% 38%;
+    --accent-foreground: 38 30% 92%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --ring: 40 60% 48%;
+    --radius: 0.75rem;
+    --success: 142 45% 40%;
+    --warning: 38 80% 52%;
+  }
+
+  /* ── Warm Cream Light Theme ─────────────────────────────────────────── */
+  [data-theme="light"] {
+    --background: 38 45% 94%;
+    --foreground: 30 25% 18%;
+    --card: 36 40% 97%;
+    --card-foreground: 30 25% 18%;
+    --border: 36 25% 78%;
+    --input: 36 25% 78%;
+    --primary: 40 60% 40%;
+    --primary-foreground: 36 40% 97%;
+    --secondary: 36 30% 88%;
+    --secondary-foreground: 30 20% 30%;
+    --muted: 36 28% 90%;
+    --muted-foreground: 30 15% 48%;
+    --accent: 345 50% 35%;
+    --accent-foreground: 36 40% 97%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --ring: 40 60% 40%;
+    --radius: 0.75rem;
+    --success: 142 45% 35%;
+    --warning: 38 80% 45%;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code, pre, .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(36, 18%, 30%);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(36, 18%, 40%);
+  }
+}
+
+@layer components {
+  /* Marble gradient text — aged gold */
+  .glam-text {
+    background: linear-gradient(135deg, #c9a84c 0%, #e8c97a 45%, #a0722a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Travertine border */
+  .glam-border {
+    position: relative;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .glam-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(201,168,76,0.45), rgba(160,114,42,0.35), rgba(120,60,60,0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Stone card */
+  .glass-card {
+    background: rgba(42, 34, 24, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+  }
+
+  /* Glow effects — gold & burgundy */
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.28), 0 0 60px rgba(201, 168, 76, 0.10);
+  }
+
+  .glow-fuchsia {
+    box-shadow: 0 0 20px rgba(160, 60, 70, 0.30), 0 0 60px rgba(160, 60, 70, 0.10);
+  }
+
+  /* Marble gradient button */
+  .btn-glam {
+    background: linear-gradient(135deg, #8b6914 0%, #c9a84c 50%, #a0722a 100%);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-glam::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-glam:hover::after {
+    opacity: 1;
+  }
+
+  .btn-glam:hover {
+    box-shadow: 0 0 24px rgba(201, 168, 76, 0.45), 0 4px 16px rgba(160, 114, 42, 0.30);
+    transform: translateY(-1px);
+  }
+
+  .btn-glam:active {
+    transform: scale(0.98) translateY(0);
+  }
+
+  /* Animated marble background */
+  .animated-gradient {
+    background: linear-gradient(-45deg, #1a1208, #2a1e10, #1c1510, #231a0e);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+  }
+
+  /* ── Travertine / Stone Grain Textures ─────────────────────────────── */
+
+  /* SVG-based fine grain noise overlay — applied via ::before pseudo */
+  .travertine-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    mix-blend-mode: overlay;
+  }
+
+  /* Horizontal travertine vein lines — subtle layered stripes */
+  .travertine-veins::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+    background-image: repeating-linear-gradient(
+      175deg,
+      transparent 0px,
+      transparent 18px,
+      rgba(201, 168, 76, 0.6) 18px,
+      rgba(201, 168, 76, 0.6) 19px,
+      transparent 19px,
+      transparent 38px,
+      rgba(160, 130, 80, 0.4) 38px,
+      rgba(160, 130, 80, 0.4) 39px,
+      transparent 39px,
+      transparent 62px,
+      rgba(180, 150, 90, 0.3) 62px,
+      rgba(180, 150, 90, 0.3) 63px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* Combined card texture — grain + veins */
+  .stone-card {
+    position: relative;
+    background: linear-gradient(
+      145deg,
+      rgba(48, 38, 26, 0.92) 0%,
+      rgba(38, 30, 20, 0.95) 40%,
+      rgba(44, 35, 23, 0.90) 70%,
+      rgba(36, 28, 18, 0.95) 100%
+    );
+    border: 1px solid rgba(201, 168, 76, 0.16);
+  }
+
+  .stone-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 300px 300px;
+    mix-blend-mode: soft-light;
+  }
+
+  .stone-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.03;
+    background-image: repeating-linear-gradient(
+      172deg,
+      transparent 0px,
+      transparent 22px,
+      rgba(220, 185, 100, 0.7) 22px,
+      rgba(220, 185, 100, 0.7) 23px,
+      transparent 23px,
+      transparent 48px,
+      rgba(170, 135, 75, 0.5) 48px,
+      rgba(170, 135, 75, 0.5) 49px,
+      transparent 49px,
+      transparent 78px,
+      rgba(195, 160, 88, 0.4) 78px,
+      rgba(195, 160, 88, 0.4) 79px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* Editor / panel background texture */
+  .stone-editor-bg {
+    position: relative;
+    background: linear-gradient(
+      160deg,
+      rgba(28, 22, 14, 0.98) 0%,
+      rgba(24, 18, 12, 1) 50%,
+      rgba(30, 24, 16, 0.98) 100%
+    );
+  }
+
+  .stone-editor-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.55 0.35' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 400px 400px;
+    mix-blend-mode: soft-light;
+  }
+
+  /* Standalone grain utility — add to any element */
+  .grain-overlay {
+    position: relative;
+  }
+
+  .grain-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 250px 250px;
+    mix-blend-mode: overlay;
+  }
+
+  /* Travertine panel — sidebar / topbar variant */
+  .travertine-panel {
+    position: relative;
+    background: linear-gradient(
+      180deg,
+      rgba(32, 25, 16, 0.97) 0%,
+      rgba(28, 22, 14, 0.98) 100%
+    );
+  }
+
+  [data-theme="light"] .travertine-panel {
+    background: linear-gradient(
+      180deg,
+      rgba(240, 228, 210, 0.98) 0%,
+      rgba(232, 218, 196, 0.99) 100%
+    );
+  }
+
+  .travertine-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.038;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.70' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    mix-blend-mode: soft-light;
+  }
+
+  .travertine-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.025;
+    background-image: repeating-linear-gradient(
+      168deg,
+      transparent 0px,
+      transparent 30px,
+      rgba(201, 168, 76, 0.5) 30px,
+      rgba(201, 168, 76, 0.5) 31px,
+      transparent 31px,
+      transparent 65px,
+      rgba(160, 130, 70, 0.35) 65px,
+      rgba(160, 130, 70, 0.35) 66px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Typing cursor animation */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .typing-cursor::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    color: #c9a84c;
+    margin-left: 2px;
+  }
+
+  /* Token pulse */
+  @keyframes tokenPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .token-pulse {
+    animation: tokenPulse 1.5s ease-in-out infinite;
+  }
+
+  /* Shimmer skeleton */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(42,34,24,0.8) 25%, rgba(65,52,34,0.6) 50%, rgba(42,34,24,0.8) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite;
+  }
+
+  /* Status dot pulse */
+  @keyframes statusPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.7; }
+  }
+
+  .status-pulse {
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+
+  /* Slide up */
+  @keyframes slideUp {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .slide-up {
+    animation: slideUp 0.2s ease-out forwards;
+  }
+
+  /* Code line highlight */
+  .code-line-highlight {
+    background: rgba(201, 168, 76, 0.10);
+    border-left: 2px solid #c9a84c;
+  }
+
+  /* Tab active underline */
+  .tab-active {
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #c9a84c, #8b2e2e) 1;
+  }
+
+  /* Deployment log line */
+  .log-success { color: #7ec87e; }
+  .log-error { color: #f87171; }
+  .log-info { color: #c9a84c; }
+  .log-warning { color: #e8c97a; }
+  .log-dim { color: #6b5a42; }
+
+  /* ── Hover Lift & Stone Grain Shift ─────────────────────────────────── */
+
+  /* Stone card hover — lifts with gold-tinted shadow + grain brightens */
+  .stone-card {
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .stone-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.55),
+      0 2px 8px rgba(201, 168, 76, 0.18),
+      inset 0 1px 0 rgba(201, 168, 76, 0.12);
+    border-color: rgba(201, 168, 76, 0.30);
+  }
+
+  .stone-card:hover::before {
+    opacity: 0.09;
+  }
+
+  .stone-card:hover::after {
+    opacity: 0.055;
+  }
+
+  /* Glass card hover — same lift treatment */
+  .glass-card {
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.50),
+      0 2px 6px rgba(201, 168, 76, 0.14);
+    border-color: rgba(201, 168, 76, 0.28);
+  }
+
+  /* Travertine panel hover — subtle lift, no translate (panels are structural) */
+  .travertine-panel {
+    transition: box-shadow 0.22s ease;
+  }
+
+  .travertine-panel:hover {
+    box-shadow:
+      inset 0 -1px 0 rgba(201, 168, 76, 0.10),
+      0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .travertine-panel:hover::before {
+    opacity: 0.06;
+  }
+
+  .travertine-panel:hover::after {
+    opacity: 0.04;
+  }
+
+  /* Grain overlay hover — brightens grain on hover */
+  .grain-overlay:hover::before {
+    opacity: 0.07;
+  }
+
+  /* Travertine grain hover */
+  .travertine-grain:hover::before {
+    opacity: 0.08;
+  }
+
+  /* Travertine veins hover */
+  .travertine-veins:hover::after {
+    opacity: 0.06;
+  }
+
+  /* Roman lift utility — add to any interactive card/panel for lift effect */
+  .roman-lift {
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .roman-lift:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 28px rgba(0, 0, 0, 0.50),
+      0 2px 8px rgba(201, 168, 76, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .roman-lift:active {
+    transform: translateY(0px);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.40),
+      inset 0 1px 0 rgba(0, 0, 0, 0.10);
+  }
+
+  /* Button hover lift — for non-glam buttons */
+  .roman-btn {
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  }
+
+  .roman-btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.45),
+      0 1px 4px rgba(201, 168, 76, 0.20);
+  }
+
+  .roman-btn:active {
+    transform: scale(0.98) translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Account Settings input */
+  .settings-input {
+    @apply w-full px-3 py-2 rounded-lg text-sm text-zinc-200 bg-zinc-800/60 border border-zinc-700/60
+      placeholder-zinc-600 focus:outline-none focus:border-violet-500/60 focus:ring-1 focus:ring-violet-500/30
+      transition-all duration-150;
+  }
+
+  [data-theme="light"] .settings-input {
+    @apply text-zinc-800 bg-white/70 border-zinc-300/70 placeholder-zinc-400;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
