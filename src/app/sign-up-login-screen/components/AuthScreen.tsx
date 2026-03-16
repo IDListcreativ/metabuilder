@@ -5,6 +5,7 @@ import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import { Sparkles, Zap, GitBranch, Rocket, Share2, Code2, AlertCircle } from 'lucide-react';
 import AppLogo from '@/components/ui/AppLogo';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 const FEATURES = [
@@ -44,6 +45,8 @@ interface AuthScreenProps {
 export default function AuthScreen({ authError, authErrorCode }: AuthScreenProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const callbackError = mapCallbackError(authError ?? null, authErrorCode ?? null);
+  const { authError: authSetupError } = useAuth();
+  const visibleError = callbackError ?? authSetupError;
 
   return (
     <div className="min-h-screen flex bg-zinc-950">
@@ -122,10 +125,10 @@ export default function AuthScreen({ authError, authErrorCode }: AuthScreenProps
         </div>
 
         <div className="w-full max-w-[400px]">
-          {callbackError && (
+          {visibleError && (
             <div className="mb-4 flex items-start gap-2.5 px-3 py-3 rounded-xl bg-red-500/10 border border-red-500/25">
               <AlertCircle size={15} className="text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-300">{callbackError}</p>
+              <p className="text-sm text-red-300">{visibleError}</p>
             </div>
           )}
 

@@ -5,6 +5,21 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '../lib/supabase/client';
 import { getPublicSiteUrl } from '../lib/supabase/config';
 
+function mapAuthSetupError(error: unknown): string {
+  const message = error instanceof Error ? error.message : 'Authentication is unavailable right now.';
+  const lower = message.toLowerCase();
+
+  if (
+    lower.includes('next_public_supabase_url') ||
+    lower.includes('next_public_supabase_anon_key') ||
+    lower.includes('next_public_supabase_publishable_default_key')
+  ) {
+    return 'Authentication is unavailable because the Supabase environment variables are missing or invalid.';
+  }
+
+  return message;
+}
+
 const AuthContext = createContext<any | null>(null);
 
 export const useAuth = () => {
@@ -19,31 +34,69 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [supabase, setSupabase] = useState<ReturnType<typeof createClient> | null>(null);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    let isMounted = true;
 
-    // Listen for auth changes
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    try {
+      const client = createClient();
+      if (isMounted) {
+        setSupabase(client);
+        setAuthError(null);
+      }
 
-    return () => subscription.unsubscribe();
+      client.auth.getSession()
+        .then(({ data: { session } }) => {
+          if (!isMounted) return;
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        })
+        .catch((error) => {
+          if (!isMounted) return;
+          setAuthError(mapAuthSetupError(error));
+          setLoading(false);
+        });
+
+      const {
+        data: { subscription }
+      } = client.auth.onAuthStateChange((_event, nextSession) => {
+        if (!isMounted) return;
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+        setLoading(false);
+      });
+
+      return () => {
+        isMounted = false;
+        subscription.unsubscribe();
+      };
+    } catch (error) {
+      if (isMounted) {
+        setSupabase(null);
+        setSession(null);
+        setUser(null);
+        setAuthError(mapAuthSetupError(error));
+        setLoading(false);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const requireSupabase = () => {
+    if (supabase) return supabase;
+    throw new Error(authError ?? 'Authentication is unavailable right now.');
+  };
 
   // Email/Password Sign Up
   const signUp = async (email: string, password: string, metadata = {}) => {
-    const { data, error } = await supabase.auth.signUp({
+    const client = requireSupabase();
+    const { data, error } = await client.auth.signUp({
       email,
       password,
       options: {
@@ -60,7 +113,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Email/Password Sign In
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const client = requireSupabase();
+    const { data, error } = await client.auth.signInWithPassword({
       email,
       password
     });
@@ -70,16 +124,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Sign Out
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
+    const client = requireSupabase();
+    const { error } = await client.auth.signOut();
     if (error) throw error;
   };
 
   // Google OAuth Sign In
   const signInWithGoogle = async () => {
+    const client = requireSupabase();
     const redirectOrigin =
       typeof window !== 'undefined' ? window.location.origin : getPublicSiteUrl();
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await client.auth.signInWithOAuth({
       provider: 'google',
       options: redirectOrigin
         ? {
@@ -94,7 +150,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Get Current User
   const getCurrentUser = async () => {
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const client = requireSupabase();
+    const { data: { user }, error } = await client.auth.getUser();
     if (error) throw error;
     return user;
   };
@@ -107,7 +164,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Get User Profile from Database
   const getUserProfile = async () => {
     if (!user) return null;
-    const { data, error } = await supabase
+    const client = requireSupabase();
+    const { data, error } = await client
       .from('user_profiles')
       .select('*')
       .eq('id', user.id)
@@ -120,6 +178,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     session,
     loading,
+    authError,
     signUp,
     signIn,
     signOut,
