@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '../lib/supabase/client';
 import { getPublicSiteUrl } from '../lib/supabase/config';
 
-const AuthContext = createContext<any>({});
+const AuthContext = createContext<any | null>(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

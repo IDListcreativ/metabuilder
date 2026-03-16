@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '@/styles/tailwind.css';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'MetaBuilder — AI App Builder',
@@ -28,20 +29,22 @@ export default function RootLayout({
       </head>
       <body className="bg-zinc-950 text-zinc-100 font-sans antialiased">
         <ThemeProvider>
-          {children}
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: 'rgba(24,24,27,0.95)',
-                border: '1px solid rgba(167,139,250,0.25)',
-                color: '#f4f4f5',
-                backdropFilter: 'blur(12px)',
-                fontFamily: 'DM Sans, sans-serif',
-              },
-            }}
-            richColors
-          />
+          <AuthProvider>
+            {children}
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: 'rgba(24,24,27,0.95)',
+                  border: '1px solid rgba(167,139,250,0.25)',
+                  color: '#f4f4f5',
+                  backdropFilter: 'blur(12px)',
+                  fontFamily: 'DM Sans, sans-serif',
+                },
+              }}
+              richColors
+            />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
