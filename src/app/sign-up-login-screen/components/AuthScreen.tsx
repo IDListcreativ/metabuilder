@@ -5,7 +5,6 @@ import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import { Sparkles, Zap, GitBranch, Rocket, Share2, Code2, AlertCircle } from 'lucide-react';
 import AppLogo from '@/components/ui/AppLogo';
-import { useAuth } from '@/contexts/AuthContext';
 
 
 const FEATURES = [
@@ -44,12 +43,7 @@ interface AuthScreenProps {
 
 export default function AuthScreen({ authError, authErrorCode }: AuthScreenProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const { signInWithGoogle } = useAuth();
   const callbackError = mapCallbackError(authError ?? null, authErrorCode ?? null);
-
-  const handleGoogleSignIn = async () => {
-    await signInWithGoogle();
-  };
 
   return (
     <div className="min-h-screen flex bg-zinc-950">
@@ -134,14 +128,6 @@ export default function AuthScreen({ authError, authErrorCode }: AuthScreenProps
               <p className="text-sm text-red-300">{callbackError}</p>
             </div>
           )}
-
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            className="w-full mb-4 py-2 rounded-lg bg-white text-black font-600 hover:bg-zinc-200 transition"
-          >
-            Sign in with Google
-          </button>
 
           {/* Tab switcher */}
           <div className="flex rounded-xl bg-zinc-900 border border-zinc-800 p-1 mb-8">
