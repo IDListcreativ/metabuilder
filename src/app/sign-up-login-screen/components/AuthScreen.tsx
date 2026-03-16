@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
-import { Sparkles, Zap, GitBranch, Rocket, Share2, Code2 } from 'lucide-react';
+import { Sparkles, Zap, GitBranch, Rocket, Share2, Code2, AlertCircle } from 'lucide-react';
 import AppLogo from '@/components/ui/AppLogo';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -16,9 +16,36 @@ const FEATURES = [
   { icon: Share2, text: 'Share projects via public link instantly' },
 ];
 
-export default function AuthScreen() {
+function mapCallbackError(rawMessage: string | null, rawCode: string | null): string | null {
+  if (!rawMessage && !rawCode) return null;
+
+  const message = rawMessage ?? 'Google sign-in failed.';
+  const combined = `${rawCode ?? ''} ${message}`.toLowerCase();
+
+  if (combined.includes('access_denied')) {
+    return 'Google sign-in was cancelled before access was granted.';
+  }
+
+  if (combined.includes('redirect') || combined.includes('callback')) {
+    return 'Google sign-in failed during the callback step. Check the Supabase redirect URLs and Google OAuth redirect URI.';
+  }
+
+  if (combined.includes('provider') && combined.includes('disabled')) {
+    return 'Google auth is not enabled in Supabase for this project.';
+  }
+
+  return message;
+}
+
+interface AuthScreenProps {
+  authError?: string | null;
+  authErrorCode?: string | null;
+}
+
+export default function AuthScreen({ authError, authErrorCode }: AuthScreenProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const { signInWithGoogle } = useAuth();
+  const callbackError = mapCallbackError(authError ?? null, authErrorCode ?? null);
 
   const handleGoogleSignIn = async () => {
     await signInWithGoogle();
@@ -101,6 +128,13 @@ export default function AuthScreen() {
         </div>
 
         <div className="w-full max-w-[400px]">
+          {callbackError && (
+            <div className="mb-4 flex items-start gap-2.5 px-3 py-3 rounded-xl bg-red-500/10 border border-red-500/25">
+              <AlertCircle size={15} className="text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-300">{callbackError}</p>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleGoogleSignIn}
