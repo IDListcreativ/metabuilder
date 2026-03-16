@@ -5,6 +5,7 @@ import { Link, Copy, Check, Eye, Globe, Lock, RefreshCw, ExternalLink, Clock, Lo
 import { toast } from 'sonner';
 import { projectService, Project } from '@/lib/services/projectService';
 import { createClient } from '@/lib/supabase/client';
+import { getPublicSiteUrl } from '@/lib/supabase/config';
 
 interface ShareLinkPanelProps {
   project: Project | null;
@@ -31,8 +32,6 @@ function formatRelativeTime(date: Date): string {
   return 'just now';
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://metabuilde7640.builtwithrocket.new';
-
 export default function ShareLinkPanel({ project, onProjectUpdate }: ShareLinkPanelProps) {
   const [copied, setCopied] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
@@ -42,7 +41,9 @@ export default function ShareLinkPanel({ project, onProjectUpdate }: ShareLinkPa
 
   const enabled = project?.shareEnabled ?? false;
   const shareSlug = project?.shareSlug ?? null;
-  const shareUrl = shareSlug ? `${SITE_URL}/share/${shareSlug}` : null;
+  const siteUrl =
+    typeof window !== 'undefined' ? window.location.origin : getPublicSiteUrl();
+  const shareUrl = shareSlug && siteUrl ? `${siteUrl}/share/${shareSlug}` : null;
   const accessLevel = project?.shareAccess ?? 'public';
 
   useEffect(() => {

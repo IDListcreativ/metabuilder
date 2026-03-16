@@ -5,13 +5,7 @@ import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import { Sparkles, Zap, GitBranch, Rocket, Share2, Code2 } from 'lucide-react';
 import AppLogo from '@/components/ui/AppLogo';
-import Icon from '@/components/ui/AppIcon';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { useAuth } from '@/contexts/AuthContext';
 
 
 const FEATURES = [
@@ -24,11 +18,11 @@ const FEATURES = [
 
 export default function AuthScreen() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google'
-    })
-  }
+  const { signInWithGoogle } = useAuth();
+
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle();
+  };
 
   return (
     <div className="min-h-screen flex bg-zinc-950">
@@ -107,16 +101,18 @@ export default function AuthScreen() {
         </div>
 
         <div className="w-full max-w-[400px]">
-        <button
-  onClick={signInWithGoogle}
-  className="w-full mb-4 py-2 rounded-lg bg-white text-black font-600 hover:bg-zinc-200 transition"
->
-  Sign in with Google
-</button>
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="w-full mb-4 py-2 rounded-lg bg-white text-black font-600 hover:bg-zinc-200 transition"
+          >
+            Sign in with Google
+          </button>
 
           {/* Tab switcher */}
           <div className="flex rounded-xl bg-zinc-900 border border-zinc-800 p-1 mb-8">
             <button
+              type="button"
               onClick={() => setMode('login')}
               className={`flex-1 py-2 rounded-lg text-sm font-600 transition-all duration-200 ${
                 mode === 'login' ?'bg-gradient-to-r from-violet-600/30 to-fuchsia-600/20 text-violet-300 border border-violet-600/25' :'text-zinc-500 hover:text-zinc-300'
@@ -125,6 +121,7 @@ export default function AuthScreen() {
               Sign In
             </button>
             <button
+              type="button"
               onClick={() => setMode('signup')}
               className={`flex-1 py-2 rounded-lg text-sm font-600 transition-all duration-200 ${
                 mode === 'signup' ?'bg-gradient-to-r from-violet-600/30 to-fuchsia-600/20 text-violet-300 border border-violet-600/25' :'text-zinc-500 hover:text-zinc-300'

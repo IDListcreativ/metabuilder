@@ -263,6 +263,49 @@ export default function AIGeneratorWorkspace() {
     handleSendMessage(lastPromptRef.current);
   };
 
+  const handleStartFresh = () => {
+    const hasWorkspaceState =
+      messages.length > 0 ||
+      files.length > 0 ||
+      totalTokens > 0 ||
+      notionContext.length > 0 ||
+      projectMemory !== null ||
+      savedProjectId !== null;
+
+    if (
+      hasWorkspaceState &&
+      !window.confirm('Start fresh? This clears the current chat, generated files, preview state, and attached project context from this workspace.')
+    ) {
+      return;
+    }
+
+    if (retryTimerRef.current) {
+      clearInterval(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+
+    pendingUserMsgRef.current = null;
+    lastPromptRef.current = '';
+    genStartRef.current = 0;
+    conversationHistoryRef.current = [{ role: 'system', content: buildSystemPrompt(null) }];
+
+    setMessages([]);
+    setFiles([]);
+    setStatus('idle');
+    setSelectedFile(null);
+    setSavedProjectId(null);
+    setJustSaved(false);
+    setLastGenTime('â€”');
+    setErrorInfo(null);
+    setRetryCountdown(0);
+    setSidePanel(null);
+    setProjectMemory(null);
+    setNotionContext([]);
+    setTotalTokens(0);
+
+    toast.success('Started a fresh workspace');
+  };
+
   const handleSaveProject = async () => {
     if (messages.length === 0) {
       toast.error('Nothing to save yet. Generate some code first!');
@@ -394,6 +437,16 @@ export default function AIGeneratorWorkspace() {
           >
             <Users size={12} />
             <span>Team</span>
+          </button>
+
+          <button
+            onClick={handleStartFresh}
+            disabled={status === 'generating'}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-600 border bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Clear this workspace and start a fresh build"
+          >
+            <RefreshCw size={12} />
+            <span>Start Fresh</span>
           </button>
 
           {/* Save button */}

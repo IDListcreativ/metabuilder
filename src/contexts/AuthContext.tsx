@@ -3,6 +3,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '../lib/supabase/client';
+import { getPublicSiteUrl } from '../lib/supabase/config';
 
 const AuthContext = createContext<any>({});
 
@@ -75,16 +76,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Google OAuth Sign In
   const signInWithGoogle = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: 'https://metabuilderhub.com/auth/callback',
-    },
-  });
+    const redirectOrigin =
+      typeof window !== 'undefined' ? window.location.origin : getPublicSiteUrl();
 
-  if (error) throw error;
-  return data;
-};
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: redirectOrigin
+        ? {
+            redirectTo: `${redirectOrigin}/auth/callback`,
+          }
+        : undefined,
+    });
+
+    if (error) throw error;
+    return data;
+  };
 
   // Get Current User
   const getCurrentUser = async () => {
